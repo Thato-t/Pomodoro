@@ -63,8 +63,7 @@ def switch_mode():
         start_timer(minutes)
     else:
         winsound.Beep(440, 500)
-        start_timer(5)
-
+        start_timer()
 
 start_timer(minutes)
 
