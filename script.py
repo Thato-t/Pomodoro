@@ -81,12 +81,12 @@ def switch_mode():
     global is_work
     is_work = not is_work
     
-    if session == 1:
+    if session == 3:
         winsound.Beep(500, 1400)
         start_timer(long_break_minutes)
         session = 0
         return
-    if is_work and session != 1:
+    if is_work and session != 3:
         winsound.Beep(440, 1000)
         start_timer(start_minutes)
         trigger_focus_mode('start')
