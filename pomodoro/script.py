@@ -5,9 +5,14 @@ from ttkbootstrap.constants import *
 from tkinter import font as tkfont
 import winsound
 import requests
+import threading
+import ctypes
+from ctypes import windll
+import pyautogui
+import os
 
 # Initialize window
-root = ttk.Window(themename="flatly")
+root = ttk.Window(themename="superhero")
 root.title('Pomodoro')
 root.attributes('-topmost', True)
 
@@ -20,6 +25,16 @@ x = screen_width - window_width - 10
 y = screen_height - window_height - 690
 root.geometry(f'{window_width}x{window_height}+{x}+{y}')
 
+# Ensure correct path
+font_path = os.path.abspath('fonts/Poppins-Regular.ttf')
+
+# Load font using windows API
+FR_PRIVATE = 0x10
+FR_NOT_ENUM = 0x20
+if windll.gdi32.AddFontResourceExW(font_path, FR_PRIVATE, 0):
+    print('Poppins font loaded successfully')
+else:
+    print('Failed to load font')
 # Fonts and state
 custom_fonts = tkfont.Font(family="Poppins", size=18)
 paused = False
