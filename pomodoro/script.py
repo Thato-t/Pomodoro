@@ -21,9 +21,12 @@ window_width = 120
 window_height = 80
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
-x = screen_width - window_width - 10
-y = screen_height - window_height - 690
+x = screen_width - window_width + 2
+y = screen_height - window_height - 687
 root.geometry(f'{window_width}x{window_height}+{x}+{y}')
+
+# Remove title bar and buttons
+root.overrideredirect(True)
 
 # Ensure correct path
 font_path = os.path.abspath('fonts/Poppins-Regular.ttf')
@@ -31,6 +34,7 @@ font_path = os.path.abspath('fonts/Poppins-Regular.ttf')
 # Load font using windows API
 FR_PRIVATE = 0x10
 FR_NOT_ENUM = 0x20
+
 if windll.gdi32.AddFontResourceExW(font_path, FR_PRIVATE, 0):
     print('Poppins font loaded successfully')
 else:
@@ -38,8 +42,8 @@ else:
 # Fonts and state
 custom_fonts = tkfont.Font(family="Poppins", size=18)
 paused = False
-session = 0
 is_work = True
+session = 0
 remaining_seconds = 0
 remaining_job = None
 
@@ -49,16 +53,25 @@ if not start_minutes:
     exit()
 break_minutes = simpledialog.askinteger('Pomodoro Timer', 'Enter number of minutes for break:', minvalue=1, maxvalue=120)
 long_break_minutes = simpledialog.askinteger('Pomodoro Timer', 'Enter number of minutes for long break:', minvalue=1, maxvalue=120)
+session_length = simpledialog.askinteger('Pomodoro Timer', 'Enter number of sessions before long break:', minvalue=1, maxvalue=60)
 
 # Frame and Label
 frame = ttk.Frame(root)
-frame.pack()
+frame.pack(expand=True, fill='both')
+# Configure the grid inside the frame
+frame.grid_rowconfigure(0, weight=1)  # Top empty row
+frame.grid_rowconfigure(2, weight=1)  # Bottom empty row
+frame.grid_columnconfigure(0, weight=1)  # Single column with weight
+
 label = ttk.Label(frame, text=f'{start_minutes:02d}:00', font=custom_fonts, foreground='#000')
-label.pack()
+label.grid(row=1, column=0)
 
 # Buttons
 pause_btn = ttk.Button(frame, text="⏸", bootstyle="warning", command=lambda: pause_timer())
 resume_btn = ttk.Button(frame, text="▶", bootstyle="success", command=lambda: resume_timer())
+
+
+frame.grid_rowconfigure(4, weight=1)
 
 # Countdown logic
 def update_timer_display():
@@ -90,24 +103,24 @@ def pause_timer():
     paused = True
     if remaining_job:
         root.after_cancel(remaining_job)
-    pause_btn.pack_forget()
-    resume_btn.pack()
+    pause_btn.grid_forget()
+    resume_btn.grid(row=3, column=0)
 
 def resume_timer():
     global paused
     paused = False
-    resume_btn.pack_forget()
-    pause_btn.pack()
+    resume_btn.grid_forget()
+    pause_btn.grid(row=3, column=0)
     countdown()
 
 def show_pause():
-    resume_btn.pack_forget()
-    pause_btn.pack()
+    resume_btn.grid_forget()
+    pause_btn.grid(row=3, column=0)
 
 def switch_mode():
     global session, is_work
     is_work = not is_work
-    if session == 1:
+    if session == session_length:
         winsound.Beep(500, 1400)
         start_timer(long_break_minutes)
         session = 0
@@ -121,4 +134,9 @@ def switch_mode():
 
 # Start first session
 start_timer(start_minutes)
+root.bind('<Delete>', lambda e: root.destroy())
+root.bind('<Escape>', lambda e: root.iconify())
+root.bind('<space>', lambda e: root.deiconify())
+
+print("All systems running")
 root.mainloop()
