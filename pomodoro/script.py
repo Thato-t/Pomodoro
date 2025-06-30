@@ -43,7 +43,7 @@ else:
 custom_fonts = tkfont.Font(family="Poppins", size=18)
 paused = False
 is_work = True
-session = 0
+session = 1
 remaining_seconds = 0
 remaining_job = None
 
@@ -81,7 +81,7 @@ def update_timer_display():
     label.config(text=f"{mins:02d}:{secs:02d}", foreground=color)
 
 def countdown():
-    global remaining_seconds, remaining_job
+    global remaining_seconds, remaining_job, session
     if paused:
         return
     update_timer_display()
@@ -92,7 +92,7 @@ def countdown():
         switch_mode()
 
 def start_timer(minutes):
-    global remaining_seconds, paused
+    global remaining_seconds, paused, session
     remaining_seconds = minutes * 60
     paused = False
     show_pause()
@@ -135,8 +135,7 @@ def switch_mode():
 # Start first session
 start_timer(start_minutes)
 root.bind('<Delete>', lambda e: root.destroy())
-root.bind('<Escape>', lambda e: root.iconify())
-root.bind('<space>', lambda e: root.deiconify())
+# TODO make certain keyboards keys to minimize and restore
 
 print("All systems running")
 root.mainloop()
