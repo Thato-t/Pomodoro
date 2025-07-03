@@ -10,7 +10,19 @@ import ctypes
 from ctypes import windll
 import pyautogui
 import os
+from filelock import FileLock, Timeout
+import pygetwindow as gw
+import sys
+import keyboard
 
+
+lock = FileLock('pomodoro.lock')
+
+try:
+    lock.acquire(timeout=0.1)
+except Timeout:
+    print('App is already running')
+    sys.exit(0)
 # Initialize window
 root = ttk.Window(themename="superhero")
 root.title('Pomodoro')
@@ -21,12 +33,12 @@ window_width = 120
 window_height = 80
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
-x = screen_width - window_width + 2
-y = screen_height - window_height - 687
+x = screen_width - window_width - 5
+y = screen_height - window_height - 719
 root.geometry(f'{window_width}x{window_height}+{x}+{y}')
 
 # Remove title bar and buttons
-root.overrideredirect(True)
+# root.overrideredirect(True)
 
 # Ensure correct path
 font_path = os.path.abspath('fonts/Poppins-Regular.ttf')
@@ -72,6 +84,14 @@ resume_btn = ttk.Button(frame, text="▶", bootstyle="success", command=lambda: 
 
 
 frame.grid_rowconfigure(4, weight=1)
+
+def bring_to_front():
+    windows = gw.getWindowsWithTitle('Pomodoro')
+    print(windows)
+    if windows:
+        win = windows[0]
+        win.restore()
+        win.activate()
 
 # Countdown logic
 def update_timer_display():
@@ -135,6 +155,8 @@ def switch_mode():
 # Start first session
 start_timer(start_minutes)
 root.bind('<Delete>', lambda e: root.destroy())
+root.bind('<space>', lambda e: root.iconify())
+keyboard.add_hotkey('Escape', bring_to_front)
 # TODO make certain keyboards keys to minimize and restore
 
 print("All systems running")
