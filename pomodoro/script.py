@@ -97,7 +97,7 @@ def bring_to_front():
 def update_timer_display():
     mins = remaining_seconds // 60
     secs = remaining_seconds % 60
-    color = "#000" if is_work else "#E74C3C"
+    color = "#27AE60" if is_work else "#F1C40F"
     label.config(text=f"{mins:02d}:{secs:02d}", foreground=color)
 
 def countdown():
@@ -138,11 +138,12 @@ def show_pause():
     pause_btn.grid(row=3, column=0)
 
 def switch_mode():
-    global session, is_work
+    global session, is_work, color
     is_work = not is_work
     if session == session_length:
         winsound.Beep(500, 1400)
         start_timer(long_break_minutes)
+        # color = '#E74C3C'
         session = 0
     elif is_work:
         winsound.Beep(440, 1000)
